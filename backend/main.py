@@ -46,6 +46,20 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Capture IAP-authenticated user into a ContextVar for token logging
+from app.ai.token_logger import current_user_email as _cue
+
+@app.middleware("http")
+async def capture_user(request, call_next):
+    hdr = request.headers.get("X-Goog-Authenticated-User-Email", "")
+    email = hdr.split(":")[-1] if hdr else "unknown"
+    tok = _cue.set(email or "unknown")
+    try:
+        return await call_next(request)
+    finally:
+        _cue.reset(tok)
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

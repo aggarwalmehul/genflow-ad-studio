@@ -11,6 +11,8 @@ def parse_json_response(text: str) -> dict:
     3. Find first { and match to last }
     4. Raise ValueError if all fail
     """
+    if not text:
+        raise ValueError('parse_json_response: empty/None input')
     text = text.strip()
 
     try:

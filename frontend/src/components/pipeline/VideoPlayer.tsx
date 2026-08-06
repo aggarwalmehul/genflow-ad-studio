@@ -116,7 +116,7 @@ export default function VideoPlayer({
 }: VideoPlayerProps) {
   // Controls state
   const aspectRatio = usePipelineStore((s) => s.aspectRatio);
-  const [veoModel, setVeoModel] = useState('veo-3.1-generate-preview');
+  const [veoModel, setVeoModel] = useState('veo-3.1-generate-001');
   const [duration, setDuration] = useState('8');
   const storeResolution = usePipelineStore((s) => s.veoResolution);
   const [resolution, setResolutionLocal] = useState(storeResolution);

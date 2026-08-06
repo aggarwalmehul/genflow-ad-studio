@@ -4,6 +4,9 @@ version = "2.0.0"
 description = "GenMedia Bulk Marketing Video Pipeline API"
 requires-python = ">=3.11"
 dependencies = [
+    "cloud-sql-python-connector[pg8000]",
+    "pg8000",
+    "google-cloud-bigquery",
     "fastapi[standard]>=0.115.0",
     "uvicorn[standard]>=0.30.0",
     "google-genai>=1.33.0",

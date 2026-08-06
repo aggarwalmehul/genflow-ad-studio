@@ -15,7 +15,7 @@ class ReviewService:
         review = ReviewResponse(job_id=job_id, review_status=ReviewStatus.PENDING)
         with self.db.connect() as conn:
             conn.execute(
-                "INSERT OR REPLACE INTO reviews (job_id, review_status) VALUES (?, ?)",
+                "INSERT INTO reviews (job_id, review_status) VALUES (?, ?) ON CONFLICT (job_id) DO UPDATE SET review_status = EXCLUDED.review_status",
                 (job_id, ReviewStatus.PENDING.value),
             )
         return review

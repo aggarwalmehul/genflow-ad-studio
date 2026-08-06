@@ -8,6 +8,9 @@ from app.jobs.events import SSEBroadcaster
 from app.jobs.runner import TaskRunner
 from app.jobs.store import JobStore
 from app.models.job import Job
+from app.ai.token_logger import current_user_email
+import os
+ADMIN_EMAILS = {e.strip() for e in os.getenv("ADMIN_EMAILS", "mehul.20331814@ltimindtree.com").split(",") if e.strip()}
 
 logger = logging.getLogger(__name__)
 
@@ -52,8 +55,11 @@ async def stream_events(
 async def list_jobs(
     job_store: JobStore = Depends(get_job_store),
 ) -> list[Job]:
-    """List all jobs."""
-    return job_store.list_jobs()
+    """List jobs: the caller's own, or all jobs for admins."""
+    user_email = current_user_email.get()
+    if user_email in ADMIN_EMAILS:
+        return job_store.list_jobs()
+    return job_store.list_jobs(user_email=user_email)
 
 
 @router.post("/{job_id}/cancel")

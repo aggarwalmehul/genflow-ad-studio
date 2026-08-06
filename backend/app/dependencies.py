@@ -32,14 +32,31 @@ def get_settings() -> Settings:
     return _get_settings()
 
 
-@lru_cache
-def get_genai_client() -> genai.Client:
+# Model families served ONLY on the 'global' Vertex endpoint.
+GLOBAL_ONLY_MODEL_PREFIXES = ("gemini-3",)
+
+
+@lru_cache(maxsize=None)
+def _client_at(location: str) -> genai.Client:
+    """One cached genai.Client per location (regional or 'global')."""
     settings = get_settings()
     return genai.Client(
         vertexai=True,
         project=settings.project_id,
-        location=settings.region,
+        location=location,
     )
+
+
+def get_genai_client(location: str | None = None) -> genai.Client:
+    """Backward-compatible: no-arg returns the regional client."""
+    return _client_at(location or get_settings().region)
+
+
+def client_for(model: str | None) -> genai.Client:
+    """Route a model to the correct endpoint; gemini-3* is global-only."""
+    if model and model.startswith(GLOBAL_ONLY_MODEL_PREFIXES):
+        return _client_at("global")
+    return _client_at(get_settings().region)
 
 
 @lru_cache
@@ -113,7 +130,7 @@ def get_gcs_storage() -> GCSStorage:
 
 @lru_cache
 def get_gemini_service() -> GeminiService:
-    return GeminiService(client=get_genai_client(), settings=get_settings())
+    return GeminiService(client_factory=client_for, settings=get_settings())
 
 
 @lru_cache

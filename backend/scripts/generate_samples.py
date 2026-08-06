@@ -277,7 +277,7 @@ ALL_SAFETY_OFF = [
 async def generate_image(client: genai.Client, prompt: str) -> bytes:
     """Generate a single product image."""
     response = await client.aio.models.generate_content(
-        model=os.getenv("IMAGE_MODEL", "gemini-3-pro-image-preview"),
+        model=os.getenv("IMAGE_MODEL", "imagen-3.0-generate-002"),
         contents=prompt,
         config=types.GenerateContentConfig(
             response_modalities=["IMAGE"],

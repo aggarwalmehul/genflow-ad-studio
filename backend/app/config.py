@@ -23,20 +23,20 @@ class Settings(BaseSettings):
     gcs_bucket_name: str = ""
 
     gemini_model: str = Field(
-        default="gemini-3-flash-preview",
+        default="gemini-2.5-flash",
         validation_alias=AliasChoices("gemini_model", "GEMINI_MODEL"),
     )
-    gemini_flash_model: str = "gemini-3-flash-preview"
+    gemini_flash_model: str = "gemini-2.5-flash"
     image_model: str = Field(
-        default="gemini-3-pro-image-preview",
+        default="gemini-2.5-flash-image",
         validation_alias=AliasChoices("image_model", "IMAGE_MODEL"),
     )
     veo_model: str = Field(
-        default="veo-3.1-generate-preview",
+        default="veo-3.1-generate-001",
         validation_alias=AliasChoices("veo_model", "VEO_MODEL", "VEO_MODEL_ID"),
     )
     veo_fast_model: str = "veo-3.1-fast-generate-001"
-    imagen_model: str = "imagen-4.0-generate-001"
+    imagen_model: str = "gemini-2.5-flash-image"
 
     output_dir: str = "output"
     storyboard_qc_threshold: int = 60

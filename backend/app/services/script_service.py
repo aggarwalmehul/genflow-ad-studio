@@ -42,8 +42,9 @@ class ScriptService:
         image_url = str(request.image_url)
 
         # Load image bytes — local /output/ path or HTTP download
-        if image_url.startswith("/output/"):
-            local_path = Path(self.settings.output_dir).resolve() / image_url.removeprefix("/output/")
+        if "/output/" in image_url:
+            rel = image_url.split("/output/", 1)[1]
+            local_path = Path(self.settings.output_dir).resolve() / rel
             image_bytes = local_path.read_bytes()
             ext = local_path.suffix.lstrip(".")
             if ext not in ("png", "jpg", "jpeg", "webp"):

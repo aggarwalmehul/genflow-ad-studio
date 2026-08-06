@@ -1,7 +1,7 @@
 """Imagen 4 image generation service.
 
-Supports imagen-4.0-generate-001 (Standard), imagen-4.0-fast-generate-001 (Fast),
-and imagen-4.0-ultra-generate-001 (Ultra).
+Supports imagen-3.0-generate-002 (Standard), imagen-3.0-fast-generate-001 (Fast),
+and imagen-3.0-generate-002 (Ultra).
 
 Note: Imagen 4 does NOT support negative_prompt. Use positive prompting only.
 """

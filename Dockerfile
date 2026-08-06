@@ -9,6 +9,8 @@ COPY backend/pyproject.toml backend/
 COPY backend/app backend/app
 COPY backend/main.py backend/
 RUN cd backend && pip install --no-cache-dir -e .
+COPY backend/output backend/output
+COPY backend/output backend/output
 
 # Install and build frontend
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
@@ -23,7 +25,7 @@ RUN cd frontend && npm run build
 RUN cp -r frontend/dist backend/static
 
 VOLUME /app/output
-EXPOSE 8000
+EXPOSE 8080
 
 WORKDIR /app/backend
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}

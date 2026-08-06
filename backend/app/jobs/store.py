@@ -1,4 +1,5 @@
 import json
+from app.ai.token_logger import current_user_email
 import logging
 import uuid
 from datetime import datetime
@@ -24,11 +25,12 @@ class JobStore:
             updated_at=now,
             request=request,
         )
+        user_email = current_user_email.get() or "unknown"
         with self.db.connect() as conn:
             conn.execute(
-                """INSERT INTO jobs (job_id, status, created_at, updated_at, request_json)
-                   VALUES (?, ?, ?, ?, ?)""",
-                (job_id, job.status.value, now.isoformat(), now.isoformat(),
+                """INSERT INTO jobs (job_id, user_email, status, created_at, updated_at, request_json)
+                   VALUES (?, ?, ?, ?, ?, ?)""",
+                (job_id, user_email, job.status.value, now.isoformat(), now.isoformat(),
                  json.dumps(request.model_dump())),
             )
         logger.info("Created job %s for product '%s'", job_id, request.product_name)
@@ -41,9 +43,15 @@ class JobStore:
             return None
         return self._row_to_job(row)
 
-    def list_jobs(self) -> list[Job]:
+    def list_jobs(self, user_email: str | None = None) -> list[Job]:
+        query = "SELECT * FROM jobs"
+        params: tuple = ()
+        if user_email:
+            query += " WHERE user_email = ?"
+            params = (user_email,)
+        query += " ORDER BY created_at DESC"
         with self.db.connect() as conn:
-            rows = conn.execute("SELECT * FROM jobs ORDER BY created_at DESC").fetchall()
+            rows = conn.execute(query, params).fetchall()
         jobs: list[Job] = []
         for r in rows:
             try:

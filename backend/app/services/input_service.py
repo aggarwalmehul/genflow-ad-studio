@@ -61,8 +61,9 @@ class InputService:
     async def analyze_image(self, image_url: str) -> dict:
         """Read an image and extract product name + specifications via AI."""
         # Load image bytes from local path or HTTP
-        if image_url.startswith("/output/"):
-            local_path = Path(self.settings.output_dir).resolve() / image_url.removeprefix("/output/")
+        if "/output/" in image_url:
+            rel = image_url.split("/output/", 1)[1]
+            local_path = Path(self.settings.output_dir).resolve() / rel
             image_bytes = local_path.read_bytes()
         else:
             import httpx

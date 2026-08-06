@@ -32,3 +32,10 @@ backend/output/*
 *.swp
 *.swo
 .DS_Store
+*.bak
+*.bak2
+*.bak_*
+*.urlfix
+*.imgfix*
+*.sqlite.bak
+.env*

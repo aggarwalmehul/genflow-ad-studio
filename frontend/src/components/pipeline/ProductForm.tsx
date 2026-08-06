@@ -57,7 +57,7 @@ export default function ProductForm({ onSubmit, isLoading, readOnly = false, ini
     image_url: '',
     scene_count: 3,
     ad_tone: 'energetic',
-    gemini_model: 'gemini-3-flash-preview',
+    gemini_model: 'gemini-2.5-flash',
   });
   const [selectedSample, setSelectedSample] = useState<string | null>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
@@ -596,7 +596,7 @@ export default function ProductForm({ onSubmit, isLoading, readOnly = false, ini
             </Tooltip>
             <FormControl size="small" fullWidth>
               <Select
-                value={formData.gemini_model ?? 'gemini-3-flash-preview'}
+                value={formData.gemini_model ?? 'gemini-2.5-flash'}
                 onChange={(e: SelectChangeEvent) =>
                   setFormData((prev) => ({ ...prev, gemini_model: e.target.value }))
                 }

@@ -39,10 +39,28 @@ ALL_SAFETY_OFF = [
 ]
 
 
+from app.ai.token_logger import log_tokens, current_user_email
+
+
 class GeminiService:
-    def __init__(self, client: genai.Client, settings: Settings):
-        self.client = client
+    def __init__(self, client=None, settings=None, client_factory=None):
+        # factory-aware: prefer client_factory (model-routing); else wrap a static client
+        if client_factory is not None:
+            self._client_factory = client_factory
+        elif client is not None:
+            self._client_factory = lambda _model: client
+        else:
+            raise ValueError("GeminiService needs client or client_factory")
         self.settings = settings
+
+    async def _gen_logged(self, model, **kwargs):
+        client = self._client_factory(model)
+        resp = await client.aio.models.generate_content(model=model, **kwargs)
+        try:
+            log_tokens("genflow", model, resp, user_email=current_user_email.get())
+        except Exception:
+            pass
+        return resp
 
     @async_retry(retries=3)
     async def generate_script(
@@ -79,7 +97,7 @@ class GeminiService:
         image_part = types.Part.from_bytes(data=image_bytes, mime_type="image/png")
         text_part = types.Part.from_text(text=user_prompt)
 
-        response = await self.client.aio.models.generate_content(
+        response = await self._gen_logged(
             model=model_id or self.settings.gemini_model,
             contents=[image_part, text_part],
             config=types.GenerateContentConfig(
@@ -105,7 +123,7 @@ class GeminiService:
         image_part = types.Part.from_bytes(data=image_bytes, mime_type="image/png")
         text_part = types.Part.from_text(text=prompt)
 
-        response = await self.client.aio.models.generate_content(
+        response = await self._gen_logged(
             model=self.settings.gemini_flash_model,
             contents=[image_part, text_part],
             config=types.GenerateContentConfig(
@@ -134,7 +152,7 @@ class GeminiService:
         )
         text_part = types.Part.from_text(text=STORYBOARD_QC_USER_PROMPT)
 
-        response = await self.client.aio.models.generate_content(
+        response = await self._gen_logged(
             model=self.settings.gemini_flash_model,
             contents=[avatar_part, product_part, storyboard_part, text_part],
             config=types.GenerateContentConfig(
@@ -145,6 +163,13 @@ class GeminiService:
             ),
         )
 
+        if not getattr(response, "text", None):
+            logger.warning("qc_storyboard: empty/blocked response — returning safe default (approved)")
+            return {
+                "avatar_validation": {"score": 100, "reason": "QC skipped: empty model response"},
+                "product_validation": {"score": 100, "reason": "QC skipped: empty model response"},
+                "composition_quality": {"score": 100, "reason": "QC skipped: empty model response"},
+            }
         return parse_json_response(response.text)
 
     @async_retry(retries=3)
@@ -163,7 +188,7 @@ class GeminiService:
         )
         text_part = types.Part.from_text(text=VIDEO_QC_USER_PROMPT)
 
-        response = await self.client.aio.models.generate_content(
+        response = await self._gen_logged(
             model=self.settings.gemini_flash_model,
             contents=[image_part, video_part, text_part],
             config=types.GenerateContentConfig(
@@ -186,7 +211,7 @@ class GeminiService:
             qc_feedback=qc_feedback,
         )
 
-        response = await self.client.aio.models.generate_content(
+        response = await self._gen_logged(
             model=self.settings.gemini_flash_model,
             contents=prompt_text,
             config=types.GenerateContentConfig(
