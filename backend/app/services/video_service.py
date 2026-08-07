@@ -278,6 +278,11 @@ class VideoService:
             VideoVariant(index=i, video_path=self.storage.to_url_path(str(lp)))
             for i, lp in enumerate(local_paths)
         ]
+        if not variants:
+            raise ValueError(
+                f"Scene {scene_num}: all video variants were content-filtered "
+                f"or empty. Try rephrasing the scene prompt."
+            )
 
         # 5. Run QC on all variants in parallel
         qc_tasks = [

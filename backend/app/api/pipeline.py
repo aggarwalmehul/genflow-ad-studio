@@ -299,6 +299,9 @@ async def generate_video(
         if job_store.get_job(request.run_id):
             job_store.update_job(request.run_id, video_results=response.results)
         return response
+    except ValueError as exc:
+        logger.warning("Video generation produced no output: %s", exc)
+        raise HTTPException(status_code=422, detail=str(exc))
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     except Exception as exc:
