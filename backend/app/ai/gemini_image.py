@@ -30,8 +30,13 @@ ALL_SAFETY_OFF = [
 
 
 class GeminiImageService:
-    def __init__(self, client: genai.Client, settings: Settings):
-        self.client = client
+    def __init__(self, client=None, settings=None, client_factory=None):
+        if client_factory is not None:
+            self._client_factory = client_factory
+        elif client is not None:
+            self._client_factory = lambda _model: client
+        else:
+            raise ValueError("GeminiImageService needs client or client_factory")
         self.settings = settings
 
     @async_retry(retries=3)
@@ -56,8 +61,9 @@ class GeminiImageService:
         else:
             contents = prompt
 
-        response = await self.client.aio.models.generate_content(
-            model=self.settings.image_model,
+        _model = self.settings.image_model
+        response = await self._client_factory(_model).aio.models.generate_content(
+            model=_model,
             contents=contents,
             config=types.GenerateContentConfig(
                 response_modalities=["IMAGE"],
@@ -132,8 +138,9 @@ class GeminiImageService:
         )
         text_part = types.Part.from_text(text=prompt)
 
-        response = await self.client.aio.models.generate_content(
-            model=image_model or self.settings.image_model,
+        _model = image_model or self.settings.image_model
+        response = await self._client_factory(_model).aio.models.generate_content(
+            model=_model,
             contents=[avatar_part, product_part, text_part],
             config=types.GenerateContentConfig(
                 response_modalities=["IMAGE"],

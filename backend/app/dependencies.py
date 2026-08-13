@@ -135,7 +135,7 @@ def get_gemini_service() -> GeminiService:
 
 @lru_cache
 def get_gemini_image_service() -> GeminiImageService:
-    return GeminiImageService(client=get_genai_client(), settings=get_settings())
+    return GeminiImageService(client_factory=client_for, settings=get_settings())
 
 
 @lru_cache
