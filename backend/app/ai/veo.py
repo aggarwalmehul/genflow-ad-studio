@@ -25,8 +25,19 @@ class VeoService:
             )
         return operation
 
-    # GA models that silently ignore reference_images
-    GA_MODELS = {"veo-3.1-generate-001", "veo-3.1-fast-generate-001"}
+    # VEO_REFERENCE_IMAGES_FIX_V1 (14 Oct): veo-3.1-generate-001 was
+    # previously assumed to silently ignore reference_images and was
+    # routed to image-mode instead. Verified via a real test generation
+    # (avatar_selected.png as asset reference) that the output visibly
+    # resembled the reference subject -- reference_images DOES work for
+    # this model on this project's Vertex AI setup. Root cause of the
+    # original assumption is unconfirmed; removed from the bypass.
+    #
+    # veo-3.1-fast-generate-001 is NOT wired into any pipeline path today
+    # (Settings.veo_fast_model is dead code, unreferenced elsewhere) and
+    # has not been independently tested -- left gated here until verified,
+    # not because it's confirmed broken.
+    GA_MODELS = {"veo-3.1-fast-generate-001"}
 
     @async_retry(retries=2, initial_delay=5.0, backoff_factor=2.0)
     async def generate_videos(
@@ -112,8 +123,10 @@ class VeoService:
         # character/product consistency.  Otherwise fall back to `image`
         # for first-frame guidance from the storyboard.
         #
-        # GA models silently ignore reference_images — fall back to
-        # storyboard first-frame mode to avoid silent quality degradation.
+        # Only models still in GA_MODELS (currently just the untested
+        # Fast variant) fall back to storyboard first-frame mode.
+        # veo-3.1-generate-001 correctly honors reference_images -- see
+        # VEO_REFERENCE_IMAGES_FIX_V1 above.
         use_asset_refs = bool(asset_image_uris)
         if use_asset_refs and model_id in self.GA_MODELS:
             logger.warning(
