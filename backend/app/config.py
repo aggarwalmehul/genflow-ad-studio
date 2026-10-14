@@ -38,7 +38,6 @@ class Settings(BaseSettings):
         default="veo-3.1-generate-001",
         validation_alias=AliasChoices("veo_model", "VEO_MODEL", "VEO_MODEL_ID"),
     )
-    veo_fast_model: str = "veo-3.1-fast-generate-001"
     imagen_model: str = "gemini-2.5-flash-image"
 
     output_dir: str = "output"
