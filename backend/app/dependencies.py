@@ -33,7 +33,10 @@ def get_settings() -> Settings:
 
 
 # Model families served ONLY on the 'global' Vertex endpoint.
-GLOBAL_ONLY_MODEL_PREFIXES = ("gemini-3",)
+GLOBAL_ONLY_MODEL_PREFIXES = (
+    "gemini-3",
+    "gemini-nano-banana",
+)  # GENFLOW_NANO_BANANA_2_1_V1
 
 
 @lru_cache(maxsize=None)

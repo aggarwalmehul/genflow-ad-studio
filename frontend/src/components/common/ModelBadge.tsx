@@ -7,7 +7,7 @@ interface ModelBadgeProps {
   sx?: SxProps<Theme>;
 }
 
-export default function ModelBadge({ label = 'Nano Banana Pro', sx }: ModelBadgeProps) {
+export default function ModelBadge({ label = 'Nano Banana 2.1', sx }: ModelBadgeProps) {
   return (
     <Box
       sx={{

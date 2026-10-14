@@ -68,7 +68,13 @@ class GeminiImageService:
             config=types.GenerateContentConfig(
                 response_modalities=["IMAGE"],
                 safety_settings=ALL_SAFETY_OFF,
-                temperature=1.0,
+                # GENFLOW_NANO_BANANA_2_1_V1:
+                # Nano Banana 2.1 rejects temperature/topP/topK/seed/logprobs.
+                **(
+                    {}
+                    if _model.startswith("gemini-nano-banana")
+                    else {"temperature": 1.0}
+                ),
                 image_config=types.ImageConfig(
                     aspect_ratio=aspect_ratio,
                     image_size=image_size,
@@ -145,7 +151,13 @@ class GeminiImageService:
             config=types.GenerateContentConfig(
                 response_modalities=["IMAGE"],
                 safety_settings=ALL_SAFETY_OFF,
-                temperature=1.0,
+                # GENFLOW_NANO_BANANA_2_1_V1:
+                # Nano Banana 2.1 rejects temperature/topP/topK/seed/logprobs.
+                **(
+                    {}
+                    if _model.startswith("gemini-nano-banana")
+                    else {"temperature": 1.0}
+                ),
                 image_config=types.ImageConfig(
                     aspect_ratio=aspect_ratio,
                     image_size=image_size,

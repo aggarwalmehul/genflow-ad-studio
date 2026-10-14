@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     )
     gemini_flash_model: str = "gemini-2.5-flash"
     image_model: str = Field(
-        default="gemini-2.5-flash-image",
+        default="gemini-nano-banana-2.1",  # GENFLOW_NANO_BANANA_2_1_V1
         validation_alias=AliasChoices("image_model", "IMAGE_MODEL"),
     )
     veo_model: str = Field(
