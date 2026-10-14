@@ -178,6 +178,14 @@ class VeoService:
                 if uri:
                     video_uris.append(uri)
                     logger.info("Generated video: %s", uri)
+
+        if video_uris:
+            from app.ai.token_logger import current_user_email, log_billing_units
+            log_billing_units(
+                "genflow", model_id, "video_seconds",
+                float(effective_duration) * len(video_uris),
+                user_email=current_user_email.get(),
+            )
         else:
             # Log detailed info about the failed operation
             logger.error(

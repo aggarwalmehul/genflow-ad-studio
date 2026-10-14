@@ -153,16 +153,13 @@ test-api:
 # ─── Deploy ─────────────────────────────────────
 deploy:
 	@echo "Building and deploying to Cloud Run..."
-	gcloud builds submit --tag gcr.io/$(PROJECT_ID)/genflow-ad-studio
+	$(eval TAG := $(shell date -u +%Y%m%d-%H%M%S))
+	gcloud builds submit --tag us-central1-docker.pkg.dev/$(PROJECT_ID)/genflow-repo/genflow:$(TAG) --project=$(PROJECT_ID) .
 	gcloud run deploy genflow-ad-studio \
-		--image gcr.io/$(PROJECT_ID)/genflow-ad-studio \
-		--platform managed --region us-central1 \
-		--allow-unauthenticated \
-		--memory 2Gi --cpu 2 \
-		--max-instances 1 --min-instances 0 \
-		--timeout 600
+		--image us-central1-docker.pkg.dev/$(PROJECT_ID)/genflow-repo/genflow:$(TAG) \
+		--region us-central1 --project=$(PROJECT_ID) --quiet
 	@echo "Deployed!"
-	@gcloud run services describe genflow-ad-studio --region us-central1 --format 'value(status.url)'
+	@gcloud run services describe genflow-ad-studio --region us-central1 --project=$(PROJECT_ID) --format 'value(status.url)'
 
 # ─── Reset DB ───────────────────────────────────
 reset-db:

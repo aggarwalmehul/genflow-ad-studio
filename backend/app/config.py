@@ -18,7 +18,10 @@ def _find_env_file() -> str | None:
 
 
 class Settings(BaseSettings):
-    project_id: str = ""
+    project_id: str = Field(
+        default="",
+        validation_alias=AliasChoices("project_id", "PROJECT_ID"),
+    )
     region: str = "global"
     gcs_bucket_name: str = ""
 

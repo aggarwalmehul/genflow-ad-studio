@@ -82,6 +82,9 @@ class GeminiImageService:
             ),
         )
 
+        from app.ai.token_logger import log_tokens, current_user_email
+        log_tokens("genflow", _model, response, user_email=current_user_email.get())
+
         for part in response.candidates[0].content.parts:
             if part.inline_data and part.inline_data.data:
                 return part.inline_data.data
@@ -164,6 +167,9 @@ class GeminiImageService:
                 ),
             ),
         )
+
+        from app.ai.token_logger import log_tokens, current_user_email
+        log_tokens("genflow", _model, response, user_email=current_user_email.get())
 
         for part in response.candidates[0].content.parts:
             if part.inline_data and part.inline_data.data:
