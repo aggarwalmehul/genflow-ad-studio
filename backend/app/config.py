@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     gcs_bucket_name: str = ""
 
     gemini_model: str = Field(
-        default="gemini-2.5-flash",
+        default="gemini-4-argon",  # tested 15 Oct via generate_script(); real variation across runs despite temperature=1.0 (contrary to Google's "ignored" spec), coherent schema-valid output, ~$0.02-0.03/call
         validation_alias=AliasChoices("gemini_model", "GEMINI_MODEL"),
     )
     gemini_flash_model: str = "gemini-2.5-flash"
