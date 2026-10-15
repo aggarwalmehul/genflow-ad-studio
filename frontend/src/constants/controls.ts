@@ -5,8 +5,9 @@ export const AD_TONES = ['energetic', 'sophisticated', 'playful', 'authoritative
 
 // ─── Gemini Models (Script Generation) ──────────────────────
 export const GEMINI_MODELS: GeminiModelOption[] = [
+  { id: 'gemini-4-argon', label: 'Gemini 4 Argon', description: 'Frontier reasoning (default)' },
   { id: 'gemini-3-pro-preview', label: 'Gemini 3 Pro', description: 'Premium quality' },
-  { id: 'gemini-3-flash-preview', label: 'Gemini 3 Flash', description: 'Fast & capable (default)' },
+  { id: 'gemini-3-flash-preview', label: 'Gemini 3 Flash', description: 'Fast & capable' },
   { id: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro', description: 'Stable' },
   { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash', description: 'Fastest' },
 ];
